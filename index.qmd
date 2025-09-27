@@ -1,9 +1,9 @@
 ---
 title: "" 
-author: "<span style='color: #FFD800;'>by Tomasz Woźniak</span>"
+author: "<span style='color: #68218a;'>by Tomasz Woźniak</span>"
 email: "tomasz.wozniak@unimelb.edu.au"
 title-slide-attributes:
-  data-background-color: "#0056B9"
+  data-background-color: "#bf3eff"
 number-sections: false
 format: 
   revealjs: 
@@ -20,18 +20,18 @@ execute:
 
 ```{r}
 #| echo: false
-blu = "#0056B9"
-yel = "#FFD800"
+blu = "#bf3eff"
+yel = "#68218a"
 ```
 
 
-##  {background-color="#0056B9"}
+##  {background-color="#bf3eff"}
 
-![](w4UKR.png){.absolute top=40 right=275 width="500"}
+![](WOMBAT25.png){.absolute top=40 right=275 width="500"}
 
 
 
-## <span style='color: #FFD800;'>About me</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>About me</span> {background-color="#bf3eff"}
 
 [Tomasz Woźniak](https://github.com/donotdespair)
 
@@ -41,7 +41,7 @@ yel = "#FFD800"
 * loves cycling, yoga, books, volunteering, contemporary theatre, music, and arts
 * I am nice!
 
-## <span style='color: #FFD800;'>About me</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>About me</span> {background-color="#bf3eff"}
 
 [Tomasz Woźniak](https://github.com/donotdespair)
 
@@ -61,9 +61,9 @@ yel = "#FFD800"
 
 
 
-# <span style='color: #FFD800;'>Motivation</span> {background-color="#0056B9"}
+# <span style='color: #68218a;'>Motivation</span> {background-color="#bf3eff"}
 
-## <span style='color: #FFD800;'>Motivation</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Motivation</span> {background-color="#bf3eff"}
 
 * Compiled code written in **C++** runs much faster than interpreted code in **R**
 * Coding in **C++** for **R** applications has always been possible
@@ -76,7 +76,7 @@ yel = "#FFD800"
   * necessity of assuring object compatibility
 * Benefits are great, but the cost was too high
 
-## <span style='color: #FFD800;'>Motivation</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Motivation</span> {background-color="#bf3eff"}
 
 * **Rcpp** is a family of packages by Dirk Eddelbuetel et al. facilitating the application of **C++** in **R**
 * An interface for communication between **R** and **C++**
@@ -87,7 +87,7 @@ yel = "#FFD800"
   * **R** code is interpreted and dynamic:\
   *perfect for data analysis*
 
-## <span style='color: #FFD800;'>Objectives for this session</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Objectives for this session</span> {background-color="#bf3eff"}
 
 * to facilitate working with **C++** in **R** applications
 * to perform a sequence of exercises
@@ -98,7 +98,7 @@ yel = "#FFD800"
   * linear algebra
   * statistical distributions
 
-## <span style='color: #FFD800;'>Materials for this session</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Materials for this session</span> {background-color="#bf3eff"}
 
 * Lecture slides
 * **C++** scripts:
@@ -107,7 +107,7 @@ yel = "#FFD800"
   * [`nicelist.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicelist.cpp)
   * [`nicerig2.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicerig2.cpp)
 
-## <span style='color: #FFD800;'>Learning resources</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Learning resources</span> {background-color="#bf3eff"}
 
 * This session!
 * vignettes: for packages [**Rcpp**](https://cran.r-project.org/package=Rcpp) and [**RcppArmadillo**](https://cran.r-project.org/package=RcppArmadillo)
@@ -124,7 +124,7 @@ yel = "#FFD800"
 
 
 
-## <span style='color: #FFD800;'>Preparation</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Preparation</span> {background-color="#bf3eff"}
 
 * Follow the instructions from Section 1.3. by [Eddelbuettel & François (2023)](https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-FAQ.pdf)
 
@@ -145,9 +145,9 @@ install.packages(RcppArmadillo); library(RcppArmadillo)
 
 
 
-# <span style='color: #FFD800;'>The first steps with Rcpp</span> {background-color="#0056B9"}
+# <span style='color: #68218a;'>The first steps with Rcpp</span> {background-color="#bf3eff"}
 
-## <span style='color: #FFD800;'>The first steps with Rcpp</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>The first steps with Rcpp</span> {background-color="#bf3eff"}
 
 Consider the following **C++** applications in **R**:
 
@@ -161,7 +161,7 @@ Consider the following **C++** applications in **R**:
   * perfect for sharing your work with the community
 
 
-## <span style='color: #FFD800;'>Define a **C++** function in an **R** script</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Define a **C++** function in an **R** script</span> {background-color="#bf3eff"}
 
 ```{r}
 Rcpp::cppFunction('
@@ -176,7 +176,7 @@ Rcpp::cppFunction('
 nicetry(2)
 ```
 
-## <span style='color: #FFD800;'>Develop a **C++** function in a `nicetry.cpp` file</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `nicetry.cpp` file</span> {background-color="#bf3eff"}
 
 A `*.cpp` file sample contents:
 
@@ -197,7 +197,7 @@ nicetry(2)
 */
 ```
 
-## <span style='color: #FFD800;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 The script includes:
 
@@ -223,7 +223,7 @@ nicetry(2)
 ```
 
 
-## <span style='color: #FFD800;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 The script includes:
 
@@ -243,7 +243,7 @@ List nicetry (                    // output type and function name
 ```
 
 
-## <span style='color: #FFD800;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
 Develop a **C++** function that creates a `Tx3` matrix with:
@@ -263,7 +263,7 @@ Get some help [HERE](https://teuder.github.io/rcpp4everyone_en/080_vector.html).
 
 
 
-## <span style='color: #FFD800;'>Use a function from a `nicelist.cpp` file in **R**</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Use a function from a `nicelist.cpp` file in **R**</span> {background-color="#bf3eff"}
 
 * `nicelist.cpp` file contents:
 
@@ -282,7 +282,7 @@ List nicelist (int n) {
 }
 ```
 
-## <span style='color: #FFD800;'>Use a function from a `nicelist.cpp` file in **R**</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Use a function from a `nicelist.cpp` file in **R**</span> {background-color="#bf3eff"}
 
 * **R** script using the function from `nicelist.cpp`:
 
@@ -292,7 +292,7 @@ nicelist(3)
 ```
 
 
-## <span style='color: #FFD800;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
 Consider a Gaussian random walk:
@@ -315,9 +315,9 @@ Hint: use functions `rnorm` and `cumsum`.
 
 
 
-# <span style='color: #FFD800;'>Some stats with RcppArmadillo</span> {background-color="#0056B9"}
+# <span style='color: #68218a;'>Some stats with RcppArmadillo</span> {background-color="#bf3eff"}
 
-## <span style='color: #FFD800;'>Some stats with RcppArmadillo</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Some stats with RcppArmadillo</span> {background-color="#bf3eff"}
 
 * Data objects from **Rcpp** have limited functionality\
 * **Armadillo** is a **C++** library for linear algebra that
@@ -332,7 +332,7 @@ Hint: use functions `rnorm` and `cumsum`.
   * easily passes data between **R** and **C++**
 
 
-## <span style='color: #FFD800;'>Some stats with RcppArmadillo: IG2 distribution</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: IG2 distribution</span> {background-color="#bf3eff"}
 
 Sampling random draws from an inverted gamma 2 distribution.
 
@@ -344,7 +344,7 @@ $$
 1. Generate random draw $x$ from $\chi^2(\nu)$
 2. Return $\frac{s}{x}$
 
-## <span style='color: #FFD800;'>Some stats with RcppArmadillo: IG2 distribution</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: IG2 distribution</span> {background-color="#bf3eff"}
 
 Contents of a `nicerig2.cpp` file:
 
@@ -370,7 +370,7 @@ nicerig2(2, 1, 1)
 
 
 
-## <span style='color: #FFD800;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
 Consider a Gaussian random walk:
@@ -387,7 +387,7 @@ Get some help [HERE](http://arma.sourceforge.net/docs.html).
 
 
 
-## <span style='color: #FFD800;'>Some stats with RcppArmadillo: linear regression</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: linear regression</span> {background-color="#bf3eff"}
 
 Contents of a `nicelr.cpp` file:
 
@@ -409,7 +409,7 @@ nicelr(y, x)
 ```
 
 
-## <span style='color: #FFD800;'>Some stats with RcppArmadillo: linear regression</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: linear regression</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
 Extend the `nicelr` function to return the error term variance:
@@ -427,7 +427,7 @@ Hint: use functions `as_scalar()`, `.t()` and `.n_elem`.
 
 
 
-## <span style='color: #FFD800;'>Some stats with RcppArmadillo: limulation smoother</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: limulation smoother</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Additional resources!"}
 Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https://gallery.rcpp.org/articles/simulation-smoother-using-rcpparmadillo/) at *Rcpp Gallery*.
@@ -438,9 +438,9 @@ Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https:/
 
 
 
-# <span style='color: #FFD800;'>What's next?</span> {background-color="#0056B9"}
+# <span style='color: #68218a;'>What's next?</span> {background-color="#bf3eff"}
 
-## <span style='color: #FFD800;'>What's next?</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>What's next?</span> {background-color="#bf3eff"}
 
 * Keep programming in **C++** for **R** applications
 * Revise solutions to our exercises:
@@ -462,22 +462,18 @@ Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https:/
 
 
 
-## <span style='color: #FFD800;'>What's next?</span> {background-color="#0056B9"}
+## <span style='color: #68218a;'>What's next?</span> {background-color="#bf3eff"}
 
 $$ $$
 
-### <span style='color: #FFD800;'>Rewrite all your code in Rcpp!</span>
+### <span style='color: #68218a;'>Rewrite all your code in Rcpp!</span>
 
 $$ $$
 
-### <span style='color: #FFD800;'>Support Ukraine!</span>
-
-$$ $$
-
-### <span style='color: #FFD800;'>Nice!</span>
+### <span style='color: #68218a;'>Nice!</span>
 
 
 
-##  {background-color="#0056B9"}
+##  {background-color="#bf3eff"}
 
 ![](social.png){.absolute top=10 right=10 width="1000"}
