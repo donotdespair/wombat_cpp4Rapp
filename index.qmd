@@ -96,7 +96,9 @@ yel = "#68218a"
   * functional programming
   * object types: scalars, vectors, matrices, lists, etc.
   * linear algebra
-  * statistical distributions
+  * numerical optimisation
+  * random number generation
+
 
 ## <span style='color: #68218a;'>Materials for this session</span> {background-color="#bf3eff"}
 
@@ -156,6 +158,7 @@ Consider the following **C++** applications in **R**:
 * Develop a **C++** function in a `.cpp` file
   * perfect for developing, testing, and benchmarking
 * Use a function from a `*.cpp` file in **R** computations
+* Use code across `*.cpp` files
   * perfect for elaborate projects
 * Develop an **R** package using **C++** code
   * perfect for sharing your work with the community
@@ -163,153 +166,172 @@ Consider the following **C++** applications in **R**:
 
 ## <span style='color: #68218a;'>Define a **C++** function in an **R** script</span> {background-color="#bf3eff"}
 
-```{r}
-Rcpp::cppFunction('
-  DataFrame nicetry (int n) {
-    NumericVector v = rnorm(n);
-    IntegerVector x = seq_len(n);
-    LogicalVector y = v > 0;
-    CharacterVector z(n, "nice");
-    return DataFrame::create(_["v"] = v, _["x"] = x, _["y"] = y, _["z"] = z);
-  }
-')
-nicetry(2)
+```{r rw1}
+Rcpp::cppFunction(                               # enables your C++ function in R
+  depends = "RcppArmadillo",                     # use RcppArmadillo
+  'DataFrame nicerw1 (int n) {                   // define the function and its argument
+    arma::vec rw(n, arma::fill::randn);          // fill a vector with random draws
+    for (int i=1; i<n; i++) {                    // specify a loop
+      rw[i] += rw[i-1];                          // update the vector elements
+    }
+    return DataFrame::create(_["rw"] = rw);      // return a data frame with the vector
+  }'
+)
+plot.ts(nicerw1(100))                            # use the function to generate and plot the random walk
 ```
 
-## <span style='color: #68218a;'>Develop a **C++** function in a `nicetry.cpp` file</span> {background-color="#bf3eff"}
+## <span style='color: #68218a;'>Develop a **C++** function in a `nicerw.cpp` file</span> {background-color="#bf3eff"}
 
-A `*.cpp` file sample contents:
+A `nicerw.cpp` file sample contents:
 
 ```{Rcpp rcpp_df}
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <RcppArmadillo.h>                // include RcppArmadillo header
+// [[Rcpp::depends(RcppArmadillo)]]       // include dependency
 
-// [[Rcpp::export]]
-List nicetry (int n) {
-  NumericVector v = rnorm(n);
-  IntegerVector x = seq_len(n);
-  LogicalVector y = v > 0;
-  CharacterVector z(n, "nice");
-  return List::create(_["v"] = v, _["x"] = x, _["y"] = y, _["z"] = z);
+using namespace Rcpp;                     // declare namespace for Rcpp
+using namespace arma;                     // declare namespace for Armadillo
+
+// [[Rcpp::export]]                       // export the following function
+vec nicerw1 (                             // declare output class(vec) and function name
+    int n                                 // declare function argument
+) { 
+  vec rw(n, fill::randn);                 // create amd fill a vector with random draws draws
+  for (int i=1; i<n; i++) {               // specify a loop
+    rw[i] += rw[i-1];                     // update the vector elements
+  }
+  return rw;                              // return the vector
 }
-/*** R
-nicetry(2)
+/*** R                                    
+plot.ts(nicerw1(100))                     # use the function to generate and plot the random walk
 */
-```
-
-## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
-
-The script includes:
-
-* **Rcpp** library and `namespace` declarations (skip: `Rcpp::`)
-
-```{Rcpp rcpp_df1, eval = FALSE}
-#include <Rcpp.h>
-using namespace Rcpp;
-```
-
-* **Rcpp** marker to export the `nicetry` function to R
-
-```{Rcpp rcpp_df2, eval = FALSE}
-// [[Rcpp::export]]
-```
-
-* sample **R** script
-
-```{Rcpp rcpp_df3, eval = FALSE}
-/*** R
-nicetry(2)
-*/
-```
-
-
-## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
-
-The script includes:
-
-* the function definition
-
-```{Rcpp rcpp_df4, eval = FALSE}
-List nicetry (                    // output type and function name
-    int n                         // input type and name
-) {
-  NumericVector v = rnorm(n);     // define a numeric vector and fill it
-  IntegerVector x = seq_len(n);   // define an integer vector as a sequence
-  LogicalVector y = v > 0;        // define a logical vector
-  CharacterVector z(n, "nice");   // define a character vector
-  // return a list with the created vectors
-  return List::create(_["v"] = v, _["x"] = x, _["y"] = y, _["z"] = z);
-}
 ```
 
 
 ## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
-Develop a **C++** function that creates a `Tx3` matrix with:
 
-* an integer `T` as the only argument
-* a constant term column: `NumericVector i(n, 1.0);`
-* a linear trend $t - \bar{t}$ column
-* a quadratic trend $(t - \bar{t})^2$ column
+1. Copy/paste/modify the **C++** function `nicerw1` by the random walk using function `cumsum`.
 
-where $t$ goes from $1$ to $T$, and $\bar{t}$ is the mean of sequence $t$.
+2. Write an **R** function that generates a random walk using functions `rnorm` and `cumsum`.
 
-* create `NumericVector`s and assemble as `NumericMatrix`
-* use functions `cumsum`, `mean`, `pow`, and `cbind`.
-
-Get some help [HERE](https://teuder.github.io/rcpp4everyone_en/080_vector.html).
+3. Benchmark the two functions using `microbenchmark::microbenchmark()`.
 :::
 
 
 
-## <span style='color: #68218a;'>Use a function from a `nicelist.cpp` file in **R**</span> {background-color="#bf3eff"}
+## <span style='color: #68218a;'>Use a function from a `nicelr.cpp` file in **R**</span> {background-color="#bf3eff"}
 
-* `nicelist.cpp` file contents:
+* `nicelr.cpp` file contents:
 
 ```{Rcpp rcpp_df5, eval = FALSE}
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+
 using namespace Rcpp;
+using namespace arma;
 
 // [[Rcpp::export]]
-List nicelist (int n) {
-  NumericVector p = rnorm(n);
-  NumericVector s(n);
-  for (int i=0; i<n; i++) {
-    s[i] =  pow(p[i], 2);
-  }
-  return List::create(_["p"] = p, _["s"] = s);
+List nicelr (vec y, mat x) {
+  vec beta_hat = solve(x.t() * x, x.t() * y);
+  return List::create(_["beta_hat"] = beta_hat);
 }
 ```
 
-## <span style='color: #68218a;'>Use a function from a `nicelist.cpp` file in **R**</span> {background-color="#bf3eff"}
-
-* **R** script using the function from `nicelist.cpp`:
+* **R** script using the function from `nicelr.cpp`:
 
 ```{r nicelist}
-Rcpp::sourceCpp("nicelist.cpp")
-nicelist(3)
+Rcpp::sourceCpp("nicelr.cpp")
+
+x = cbind(rep(1,5),1:5)
+y = x %*% c(1,2) + rnorm(5)
+nicelr(y, x)
 ```
 
 
 ## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
-Consider a Gaussian random walk:
-$$
-y_t = y_{t-1} + \varepsilon_t, \qquad \varepsilon_t \sim N(0,1), \qquad y_0 = 0
-$$
-Develop a **C++** function that:
 
-* has an integer `T` as the only argument
-* returns a `T`-vector with Gaussian random walk\
+1. Extend the `nicelr` function by computing the estimator of the error term variance to be computed as a real number class `double`:
 
-Hint: use functions `rnorm` and `cumsum`.
+$$
+\hat\sigma^2 = \frac{1}{T} \left( Y - X\hat\beta \right)'\left( Y - X\hat\beta \right)
+$$
+2. Extend the output `List` to include a new element `sigma2_hat`.
+
+Hint: use functions `.t()` and `as_scalar()`.
 :::
 
 
+## <span style='color: #68218a;'>Use code across `.cpp` files</span> {background-color="#bf3eff"}
+
+* Use `nicerw.cpp` file contents to generate a random walk and estimate an autoregressive model in `nicelr.cpp` file.
+
+STEP 1: Prepare the `nicerw1.cpp` file
+
+```{Rcpp rcpprw1}
+#| eval: false
+
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+using namespace arma;
+
+// [[Rcpp::export]] 
+arma::vec nicerw1 (int n) { 
+  vec rw(n, fill::randn);
+  return cumsum(rw);
+}
+```
+
+STEP 2: Prepare the header `nicerw1.h`
+
+```{Rcpp rcpprw2}
+#| eval: false
+
+#ifndef _NICERW1_
+#define _NICERW1_
+
+#include <RcppArmadillo.h>
+arma::vec nicerw1 (int n);
+#endif
+```
 
 
+## <span style='color: #68218a;'>Use code across `.cpp` files</span> {background-color="#bf3eff"}
+
+STEP 3: Include the header `nicerw1.h` in the `nicelr1.cpp` file
+
+```{Rcpp rcpprw3}
+#| eval: false
+
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+
+#include <nicerw1.h>
+
+using namespace Rcpp;
+using namespace arma;
+
+// [[Rcpp::export]]
+List nicelr (
+    vec y, 
+    mat x
+) {
+  vec beta_hat = solve(x.t() * x, x.t() * y);
+  double sigma2_hat = as_scalar( (y - x * beta_hat).t() * (y - x * beta_hat) ) / y.n_elem;
+  return List::create(
+    _["beta_hat"] = beta_hat, 
+    _["sigma2_hat"] = sigma2_hat
+  );
+}
+
+/*** R
+rw = nicerw1(100)
+nicelr(as.matrix(rw[2:100]), as.matrix(rw[1:99]))
+*/
+
+```
 
 
 

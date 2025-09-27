@@ -16,3 +16,18 @@ Step 1: Install a C++ compiler: for Windows: install RTools (https://cran.r-proj
 Step 2: Install the Rcpp and RcppArmadillo packages by running in R: library(Rcpp); library(RcppArmadillo)
 Step 3: Check if the installation is successful. Source the file nicetry.cpp in RStudio by executing: Rcpp::sourceCpp("nicetry.cpp"). If you see a matrix with values 1, 2, and 3 in R, you're good to go for the workshop.
 We apologise, but we cannot assist any further with the preparations.
+
+## Sequence:
+
+Go straight into RcppArmadillo
+
+A C++ function within R script: generate rw using a for loop, return as data.frame
+A cpp file: change rw function and return as vec;
+Exercise: Rewrite the rw generation by using cumsum
+
+Create a file with C++ function and complement it with a header file
+Extra: compare the two functions: use the header! Compare to an R function with cumsum
+
+Linear regression example:
+Exercise with error term variance estimation
+MLE: presentation of numerical optimisation based on linear regression!

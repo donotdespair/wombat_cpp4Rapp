@@ -466,7 +466,8 @@
 <li>functional programming</li>
 <li>object types: scalars, vectors, matrices, lists, etc.</li>
 <li>linear algebra</li>
-<li>statistical distributions</li>
+<li>numerical optimisation</li>
+<li>random number generation</li>
 </ul></li>
 </ul>
 </section>
@@ -539,7 +540,8 @@
 <ul>
 <li>perfect for developing, testing, and benchmarking</li>
 </ul></li>
-<li>Use a function from a <code>*.cpp</code> file in <strong>R</strong> computations
+<li>Use a function from a <code>*.cpp</code> file in <strong>R</strong> computations</li>
+<li>Use code across <code>*.cpp</code> files
 <ul>
 <li>perfect for elaborate projects</li>
 </ul></li>
@@ -551,90 +553,103 @@
 </section>
 <section id="define-a-c-function-in-an-r-script" class="slide level2" data-background-color="#bf3eff">
 <h2><span style="color: #68218a;">Define a <strong>C++</strong> function in an <strong>R</strong> script</span></h2>
-<div class="cell" data-hash="index_cache/revealjs/unnamed-chunk-3_9b0f6ab2780f22ae0dee0a8474b03534">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>Rcpp<span class="sc">::</span><span class="fu">cppFunction</span>(<span class="st">'</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  DataFrame nicetry (int n) {</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="st">    NumericVector v = rnorm(n);</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="st">    IntegerVector x = seq_len(n);</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="st">    LogicalVector y = v &gt; 0;</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="st">    CharacterVector z(n, "nice");</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="st">    return DataFrame::create(_["v"] = v, _["x"] = x, _["y"] = y, _["z"] = z);</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="st">  }</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="st">'</span>)</span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="fu">nicetry</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>           v x     y    z
-1  0.6187115 1  TRUE nice
-2 -0.6988785 2 FALSE nice</code></pre>
+<div class="cell" data-hash="index_cache/revealjs/rw1_2a52d1107665fbf6e926c2f4d4ddffcb">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>Rcpp<span class="sc">::</span><span class="fu">cppFunction</span>(                               <span class="co"># enables your C++ function in R</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="at">depends =</span> <span class="st">"RcppArmadillo"</span>,                     <span class="co"># use RcppArmadillo</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="st">'DataFrame nicerw1 (int n) {                   // define the function and its argument</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="st">    arma::vec rw(n, arma::fill::randn);          // fill a vector with random draws</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="st">    for (int i=1; i&lt;n; i++) {                    // specify a loop</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="st">      rw[i] += rw[i-1];                          // update the vector elements</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="st">    }</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="st">    return DataFrame::create(_["rw"] = rw);      // return a data frame with the vector</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="st">  }'</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="fu">plot.ts</span>(<span class="fu">nicerw1</span>(<span class="dv">100</span>))                            <span class="co"># use the function to generate and plot the random walk</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
 </div>
-</div>
-</section>
-<section id="develop-a-c-function-in-a-nicetry.cpp-file" class="slide level2" data-background-color="#bf3eff">
-<h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>nicetry.cpp</code> file</span></h2>
-<p>A <code>*.cpp</code> file sample contents:</p>
-<div class="cell" data-hash="index_cache/revealjs/rcpp_df_e47606ad23fc6143b138dd77b2e73f1e">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1"></a>#include &lt;Rcpp.h&gt;</span>
-<span id="cb4-2"><a href="#cb4-2"></a>using namespace Rcpp;</span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a>// [[Rcpp::export]]</span>
-<span id="cb4-5"><a href="#cb4-5"></a>List nicetry (int n) {</span>
-<span id="cb4-6"><a href="#cb4-6"></a>  NumericVector v = rnorm(n);</span>
-<span id="cb4-7"><a href="#cb4-7"></a>  IntegerVector x = seq_len(n);</span>
-<span id="cb4-8"><a href="#cb4-8"></a>  LogicalVector y = v &gt; 0;</span>
-<span id="cb4-9"><a href="#cb4-9"></a>  CharacterVector z(n, "nice");</span>
-<span id="cb4-10"><a href="#cb4-10"></a>  return List::create(_["v"] = v, _["x"] = x, _["y"] = y, _["z"] = z);</span>
-<span id="cb4-11"><a href="#cb4-11"></a>}</span>
-<span id="cb4-12"><a href="#cb4-12"></a>/*** R</span>
-<span id="cb4-13"><a href="#cb4-13"></a>nicetry(2)</span>
-<span id="cb4-14"><a href="#cb4-14"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<img data-src="index_files/figure-revealjs/rw1-1.png" width="960" class="r-stretch"></section>
+<section id="develop-a-c-function-in-a-nicerw.cpp-file" class="slide level2" data-background-color="#bf3eff">
+<h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>nicerw.cpp</code> file</span></h2>
+<p>A <code>nicerw.cpp</code> file sample contents:</p>
+<div class="cell" data-hash="index_cache/revealjs/rcpp_df_d064afe042e0c579303db3acb23f14f9">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="#cb3-1"></a>#include &lt;RcppArmadillo.h&gt;                // include RcppArmadillo header</span>
+<span id="cb3-2"><a href="#cb3-2"></a>// [[Rcpp::depends(RcppArmadillo)]]       // include dependency</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>using namespace Rcpp;                     // declare namespace for Rcpp</span>
+<span id="cb3-5"><a href="#cb3-5"></a>using namespace arma;                     // declare namespace for Armadillo</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>// [[Rcpp::export]]                       // export the following function</span>
+<span id="cb3-8"><a href="#cb3-8"></a>vec nicerw1 (                             // declare output class(vec) and function name</span>
+<span id="cb3-9"><a href="#cb3-9"></a>    int n                                 // declare function argument</span>
+<span id="cb3-10"><a href="#cb3-10"></a>) { </span>
+<span id="cb3-11"><a href="#cb3-11"></a>  vec rw(n, fill::randn);                 // create amd fill a vector with random draws draws</span>
+<span id="cb3-12"><a href="#cb3-12"></a>  for (int i=1; i&lt;n; i++) {               // specify a loop</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    rw[i] += rw[i-1];                     // update the vector elements</span>
+<span id="cb3-14"><a href="#cb3-14"></a>  }</span>
+<span id="cb3-15"><a href="#cb3-15"></a>  return rw;                              // return the vector</span>
+<span id="cb3-16"><a href="#cb3-16"></a>}</span>
+<span id="cb3-17"><a href="#cb3-17"></a>/*** R                                    </span>
+<span id="cb3-18"><a href="#cb3-18"></a>plot.ts(nicerw1(100))                     # use the function to generate and plot the random walk</span>
+<span id="cb3-19"><a href="#cb3-19"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="develop-a-c-function-in-a-.cpp-file" class="slide level2" data-background-color="#bf3eff">
 <h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>.cpp</code> file</span></h2>
-<p>The script includes:</p>
+<div class="callout callout-caution callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Your turn!</strong></p>
+</div>
+<div class="callout-content">
+<ol type="1">
+<li><p>Copy/paste/modify the <strong>C++</strong> function <code>nicerw1</code> by the random walk using function <code>cumsum</code>.</p></li>
+<li><p>Write an <strong>R</strong> function that generates a random walk using functions <code>rnorm</code> and <code>cumsum</code>.</p></li>
+<li><p>Benchmark the two functions using <code>microbenchmark::microbenchmark()</code>.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+<section id="use-a-function-from-a-nicelr.cpp-file-in-r" class="slide level2" data-background-color="#bf3eff">
+<h2><span style="color: #68218a;">Use a function from a <code>nicelr.cpp</code> file in <strong>R</strong></span></h2>
 <ul>
-<li><strong>Rcpp</strong> library and <code>namespace</code> declarations (skip: <code>Rcpp::</code>)</li>
+<li><code>nicelr.cpp</code> file contents:</li>
 </ul>
-<div class="cell" data-hash="index_cache/revealjs/rcpp_df1_777930006815680f0dadd516d5216ceb">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>#include &lt;Rcpp.h&gt;</span>
-<span id="cb5-2"><a href="#cb5-2"></a>using namespace Rcpp;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="index_cache/revealjs/rcpp_df5_f934229724025bf2aad07e67e9559b13">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
+<span id="cb4-2"><a href="#cb4-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>using namespace Rcpp;</span>
+<span id="cb4-5"><a href="#cb4-5"></a>using namespace arma;</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>// [[Rcpp::export]]</span>
+<span id="cb4-8"><a href="#cb4-8"></a>List nicelr (vec y, mat x) {</span>
+<span id="cb4-9"><a href="#cb4-9"></a>  vec beta_hat = solve(x.t() * x, x.t() * y);</span>
+<span id="cb4-10"><a href="#cb4-10"></a>  return List::create(_["beta_hat"] = beta_hat);</span>
+<span id="cb4-11"><a href="#cb4-11"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
-<li><strong>Rcpp</strong> marker to export the <code>nicetry</code> function to R</li>
+<li><strong>R</strong> script using the function from <code>nicelr.cpp</code>:</li>
 </ul>
-<div class="cell" data-hash="index_cache/revealjs/rcpp_df2_40ae21c0fb21e0ca17608f9fc712b209">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1"></a>// [[Rcpp::export]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="index_cache/revealjs/nicelist_e7082dc94b2812eeaffc22c3f7d10b84">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>Rcpp<span class="sc">::</span><span class="fu">sourceCpp</span>(<span class="st">"nicelr.cpp"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a>x <span class="ot">=</span> <span class="fu">cbind</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">5</span>),<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>y <span class="ot">=</span> x <span class="sc">%*%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">5</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">nicelr</span>(y, x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$beta_hat
+         [,1]
+[1,] 1.712490
+[2,] 1.668992</code></pre>
 </div>
-<ul>
-<li>sample <strong>R</strong> script</li>
-</ul>
-<div class="cell" data-hash="index_cache/revealjs/rcpp_df3_bcf3d97277c8ddebbed594cf4fa50018">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1"></a>/*** R</span>
-<span id="cb7-2"><a href="#cb7-2"></a>nicetry(2)</span>
-<span id="cb7-3"><a href="#cb7-3"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="develop-a-c-function-in-a-.cpp-file-1" class="slide level2" data-background-color="#bf3eff">
 <h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>.cpp</code> file</span></h2>
-<p>The script includes:</p>
-<ul>
-<li>the function definition</li>
-</ul>
-<div class="cell" data-hash="index_cache/revealjs/rcpp_df4_64b963c5e1f50082b4b2d461cb9bf83b">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb8-1"><a href="#cb8-1"></a>List nicetry (                    // output type and function name</span>
-<span id="cb8-2"><a href="#cb8-2"></a>    int n                         // input type and name</span>
-<span id="cb8-3"><a href="#cb8-3"></a>) {</span>
-<span id="cb8-4"><a href="#cb8-4"></a>  NumericVector v = rnorm(n);     // define a numeric vector and fill it</span>
-<span id="cb8-5"><a href="#cb8-5"></a>  IntegerVector x = seq_len(n);   // define an integer vector as a sequence</span>
-<span id="cb8-6"><a href="#cb8-6"></a>  LogicalVector y = v &gt; 0;        // define a logical vector</span>
-<span id="cb8-7"><a href="#cb8-7"></a>  CharacterVector z(n, "nice");   // define a character vector</span>
-<span id="cb8-8"><a href="#cb8-8"></a>  // return a list with the created vectors</span>
-<span id="cb8-9"><a href="#cb8-9"></a>  return List::create(_["v"] = v, _["x"] = x, _["y"] = y, _["z"] = z);</span>
-<span id="cb8-10"><a href="#cb8-10"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="develop-a-c-function-in-a-.cpp-file-2" class="slide level2" data-background-color="#bf3eff">
-<h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>.cpp</code> file</span></h2>
 <div class="callout callout-caution callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -644,82 +659,73 @@
 <p><strong>Your turn!</strong></p>
 </div>
 <div class="callout-content">
-<p>Develop a <strong>C++</strong> function that creates a <code>Tx3</code> matrix with:</p>
-<ul>
-<li>an integer <code>T</code> as the only argument</li>
-<li>a constant term column: <code>NumericVector i(n, 1.0);</code></li>
-<li>a linear trend <span class="math inline">\(t - \bar{t}\)</span> column</li>
-<li>a quadratic trend <span class="math inline">\((t - \bar{t})^2\)</span> column</li>
-</ul>
-<p>where <span class="math inline">\(t\)</span> goes from <span class="math inline">\(1\)</span> to <span class="math inline">\(T\)</span>, and <span class="math inline">\(\bar{t}\)</span> is the mean of sequence <span class="math inline">\(t\)</span>.</p>
-<ul>
-<li>create <code>NumericVector</code>s and assemble as <code>NumericMatrix</code></li>
-<li>use functions <code>cumsum</code>, <code>mean</code>, <code>pow</code>, and <code>cbind</code>.</li>
-</ul>
-<p>Get some help <a href="https://teuder.github.io/rcpp4everyone_en/080_vector.html">HERE</a>.</p>
+<ol type="1">
+<li>Extend the <code>nicelr</code> function by computing the estimator of the error term variance to be computed as a real number class <code>double</code>:</li>
+</ol>
+<p><span class="math display">\[
+\hat\sigma^2 = \frac{1}{T} \left( Y - X\hat\beta \right)'\left( Y - X\hat\beta \right)
+\]</span> 2. Extend the output <code>List</code> to include a new element <code>sigma2_hat</code>.</p>
+<p>Hint: use functions <code>.t()</code> and <code>as_scalar()</code>.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="use-a-function-from-a-nicelist.cpp-file-in-r" class="slide level2" data-background-color="#bf3eff">
-<h2><span style="color: #68218a;">Use a function from a <code>nicelist.cpp</code> file in <strong>R</strong></span></h2>
+<section id="use-code-across-.cpp-files" class="slide level2" data-background-color="#bf3eff">
+<h2><span style="color: #68218a;">Use code across <code>.cpp</code> files</span></h2>
 <ul>
-<li><code>nicelist.cpp</code> file contents:</li>
+<li>Use <code>nicerw.cpp</code> file contents to generate a random walk and estimate an autoregressive model in <code>nicelr.cpp</code> file.</li>
 </ul>
-<div class="cell" data-hash="index_cache/revealjs/rcpp_df5_2821a176ea6477d30c70fb973345ba4f">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb9-1"><a href="#cb9-1"></a>#include &lt;Rcpp.h&gt;</span>
-<span id="cb9-2"><a href="#cb9-2"></a>using namespace Rcpp;</span>
+<p>STEP 1: Prepare the <code>nicerw1.cpp</code> file</p>
+<div class="cell" data-hash="index_cache/revealjs/rcpprw1_520f57e1b2494faa459b22ee2dc16d99">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
+<span id="cb7-2"><a href="#cb7-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
+<span id="cb7-3"><a href="#cb7-3"></a>using namespace arma;</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a>// [[Rcpp::export]] </span>
+<span id="cb7-6"><a href="#cb7-6"></a>arma::vec nicerw1 (int n) { </span>
+<span id="cb7-7"><a href="#cb7-7"></a>  vec rw(n, fill::randn);</span>
+<span id="cb7-8"><a href="#cb7-8"></a>  return cumsum(rw);</span>
+<span id="cb7-9"><a href="#cb7-9"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>STEP 2: Prepare the header <code>nicerw1.h</code></p>
+<div class="cell" data-hash="index_cache/revealjs/rcpprw2_ce0b96695a1c4987a24fd6f7883161b3">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb8-1"><a href="#cb8-1"></a>#ifndef _NICERW1_</span>
+<span id="cb8-2"><a href="#cb8-2"></a>#define _NICERW1_</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>#include &lt;RcppArmadillo.h&gt;</span>
+<span id="cb8-5"><a href="#cb8-5"></a>arma::vec nicerw1 (int n);</span>
+<span id="cb8-6"><a href="#cb8-6"></a>#endif</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="use-code-across-.cpp-files-1" class="slide level2" data-background-color="#bf3eff">
+<h2><span style="color: #68218a;">Use code across <code>.cpp</code> files</span></h2>
+<p>STEP 3: Include the header <code>nicerw1.h</code> in the <code>nicelr1.cpp</code> file</p>
+<div class="cell" data-hash="index_cache/revealjs/rcpprw3_1280d894710f07ac7d2b1d11dfc5c42a">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb9-1"><a href="#cb9-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
+<span id="cb9-2"><a href="#cb9-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
 <span id="cb9-3"><a href="#cb9-3"></a></span>
-<span id="cb9-4"><a href="#cb9-4"></a>// [[Rcpp::export]]</span>
-<span id="cb9-5"><a href="#cb9-5"></a>List nicelist (int n) {</span>
-<span id="cb9-6"><a href="#cb9-6"></a>  NumericVector p = rnorm(n);</span>
-<span id="cb9-7"><a href="#cb9-7"></a>  NumericVector s(n);</span>
-<span id="cb9-8"><a href="#cb9-8"></a>  for (int i=0; i&lt;n; i++) {</span>
-<span id="cb9-9"><a href="#cb9-9"></a>    s[i] =  pow(p[i], 2);</span>
-<span id="cb9-10"><a href="#cb9-10"></a>  }</span>
-<span id="cb9-11"><a href="#cb9-11"></a>  return List::create(_["p"] = p, _["s"] = s);</span>
-<span id="cb9-12"><a href="#cb9-12"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="use-a-function-from-a-nicelist.cpp-file-in-r-1" class="slide level2" data-background-color="#bf3eff">
-<h2><span style="color: #68218a;">Use a function from a <code>nicelist.cpp</code> file in <strong>R</strong></span></h2>
-<ul>
-<li><strong>R</strong> script using the function from <code>nicelist.cpp</code>:</li>
-</ul>
-<div class="cell" data-hash="index_cache/revealjs/nicelist_89a75a48e2411f46b0f81b7f4035951f">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>Rcpp<span class="sc">::</span><span class="fu">sourceCpp</span>(<span class="st">"nicelist.cpp"</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">nicelist</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$p
-[1] -0.9465506  1.2458554 -1.0847905
-
-$s
-[1] 0.8959581 1.5521557 1.1767704</code></pre>
-</div>
-</div>
-</section>
-<section id="develop-a-c-function-in-a-.cpp-file-3" class="slide level2" data-background-color="#bf3eff">
-<h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>.cpp</code> file</span></h2>
-<div class="callout callout-caution callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Your turn!</strong></p>
-</div>
-<div class="callout-content">
-<p>Consider a Gaussian random walk: <span class="math display">\[
-y_t = y_{t-1} + \varepsilon_t, \qquad \varepsilon_t \sim N(0,1), \qquad y_0 = 0
-\]</span> Develop a <strong>C++</strong> function that:</p>
-<ul>
-<li>has an integer <code>T</code> as the only argument</li>
-<li>returns a <code>T</code>-vector with Gaussian random walk<br>
-</li>
-</ul>
-<p>Hint: use functions <code>rnorm</code> and <code>cumsum</code>.</p>
-</div>
-</div>
+<span id="cb9-4"><a href="#cb9-4"></a>#include &lt;nicerw1.h&gt;</span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a>using namespace Rcpp;</span>
+<span id="cb9-7"><a href="#cb9-7"></a>using namespace arma;</span>
+<span id="cb9-8"><a href="#cb9-8"></a></span>
+<span id="cb9-9"><a href="#cb9-9"></a>// [[Rcpp::export]]</span>
+<span id="cb9-10"><a href="#cb9-10"></a>List nicelr (</span>
+<span id="cb9-11"><a href="#cb9-11"></a>    vec y, </span>
+<span id="cb9-12"><a href="#cb9-12"></a>    mat x</span>
+<span id="cb9-13"><a href="#cb9-13"></a>) {</span>
+<span id="cb9-14"><a href="#cb9-14"></a>  vec beta_hat = solve(x.t() * x, x.t() * y);</span>
+<span id="cb9-15"><a href="#cb9-15"></a>  double sigma2_hat = as_scalar( (y - x * beta_hat).t() * (y - x * beta_hat) ) / y.n_elem;</span>
+<span id="cb9-16"><a href="#cb9-16"></a>  return List::create(</span>
+<span id="cb9-17"><a href="#cb9-17"></a>    _["beta_hat"] = beta_hat, </span>
+<span id="cb9-18"><a href="#cb9-18"></a>    _["sigma2_hat"] = sigma2_hat</span>
+<span id="cb9-19"><a href="#cb9-19"></a>  );</span>
+<span id="cb9-20"><a href="#cb9-20"></a>}</span>
+<span id="cb9-21"><a href="#cb9-21"></a></span>
+<span id="cb9-22"><a href="#cb9-22"></a>/*** R</span>
+<span id="cb9-23"><a href="#cb9-23"></a>rw = nicerw1(100)</span>
+<span id="cb9-24"><a href="#cb9-24"></a>nicelr(as.matrix(rw[2:100]), as.matrix(rw[1:99]))</span>
+<span id="cb9-25"><a href="#cb9-25"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -763,26 +769,26 @@ y_t = y_{t-1} + \varepsilon_t, \qquad \varepsilon_t \sim N(0,1), \qquad y_0 = 0
 <h2><span style="color: #68218a;">Some stats with RcppArmadillo: IG2 distribution</span></h2>
 <p>Contents of a <code>nicerig2.cpp</code> file:</p>
 <div class="cell" data-hash="index_cache/revealjs/nicerig2_ac2c51fbd8d5c91928a31b7fed09fcd1">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb12-1"><a href="#cb12-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
-<span id="cb12-2"><a href="#cb12-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
-<span id="cb12-3"><a href="#cb12-3"></a>using namespace arma;</span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a>// [[Rcpp::export]]</span>
-<span id="cb12-6"><a href="#cb12-6"></a>vec nicerig2 (</span>
-<span id="cb12-7"><a href="#cb12-7"></a>  const int n, </span>
-<span id="cb12-8"><a href="#cb12-8"></a>  const double s, </span>
-<span id="cb12-9"><a href="#cb12-9"></a>  const double nu</span>
-<span id="cb12-10"><a href="#cb12-10"></a>) {</span>
-<span id="cb12-11"><a href="#cb12-11"></a>  vec rig2 = s / chi2rnd( nu, n );</span>
-<span id="cb12-12"><a href="#cb12-12"></a>  return rig2;</span>
-<span id="cb12-13"><a href="#cb12-13"></a>}</span>
-<span id="cb12-14"><a href="#cb12-14"></a></span>
-<span id="cb12-15"><a href="#cb12-15"></a>/*** R</span>
-<span id="cb12-16"><a href="#cb12-16"></a>nicerig2(2, 1, 1)</span>
-<span id="cb12-17"><a href="#cb12-17"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
+<span id="cb10-2"><a href="#cb10-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
+<span id="cb10-3"><a href="#cb10-3"></a>using namespace arma;</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a>// [[Rcpp::export]]</span>
+<span id="cb10-6"><a href="#cb10-6"></a>vec nicerig2 (</span>
+<span id="cb10-7"><a href="#cb10-7"></a>  const int n, </span>
+<span id="cb10-8"><a href="#cb10-8"></a>  const double s, </span>
+<span id="cb10-9"><a href="#cb10-9"></a>  const double nu</span>
+<span id="cb10-10"><a href="#cb10-10"></a>) {</span>
+<span id="cb10-11"><a href="#cb10-11"></a>  vec rig2 = s / chi2rnd( nu, n );</span>
+<span id="cb10-12"><a href="#cb10-12"></a>  return rig2;</span>
+<span id="cb10-13"><a href="#cb10-13"></a>}</span>
+<span id="cb10-14"><a href="#cb10-14"></a></span>
+<span id="cb10-15"><a href="#cb10-15"></a>/*** R</span>
+<span id="cb10-16"><a href="#cb10-16"></a>nicerig2(2, 1, 1)</span>
+<span id="cb10-17"><a href="#cb10-17"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="develop-a-c-function-in-a-.cpp-file-4" class="slide level2" data-background-color="#bf3eff">
+<section id="develop-a-c-function-in-a-.cpp-file-2" class="slide level2" data-background-color="#bf3eff">
 <h2><span style="color: #68218a;">Develop a <strong>C++</strong> function in a <code>.cpp</code> file</span></h2>
 <div class="callout callout-caution callout-titled callout-style-default">
 <div class="callout-body">
@@ -810,20 +816,20 @@ y_t = y_{t-1} + \varepsilon_t, \qquad \varepsilon_t \sim N(0,1), \qquad y_0 = 0
 <h2><span style="color: #68218a;">Some stats with RcppArmadillo: linear regression</span></h2>
 <p>Contents of a <code>nicelr.cpp</code> file:</p>
 <div class="cell" data-hash="index_cache/revealjs/nicelr_5664f05552ec0843db2365d94cf96d59">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb13-1"><a href="#cb13-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
-<span id="cb13-2"><a href="#cb13-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
-<span id="cb13-3"><a href="#cb13-3"></a>using namespace arma;</span>
-<span id="cb13-4"><a href="#cb13-4"></a></span>
-<span id="cb13-5"><a href="#cb13-5"></a>// [[Rcpp::export]]</span>
-<span id="cb13-6"><a href="#cb13-6"></a>vec nicelr (vec y, mat x) {</span>
-<span id="cb13-7"><a href="#cb13-7"></a>  vec beta_hat = solve(x.t() * x, x.t() * y);</span>
-<span id="cb13-8"><a href="#cb13-8"></a>  return beta_hat;</span>
-<span id="cb13-9"><a href="#cb13-9"></a>}</span>
-<span id="cb13-10"><a href="#cb13-10"></a></span>
-<span id="cb13-11"><a href="#cb13-11"></a>/*** R</span>
-<span id="cb13-12"><a href="#cb13-12"></a>x = cbind(rep(1,5),1:5); y = x %*% c(1,2) + rnorm(5)</span>
-<span id="cb13-13"><a href="#cb13-13"></a>nicelr(y, x)</span>
-<span id="cb13-14"><a href="#cb13-14"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource rcpp number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a href="#cb11-1"></a>#include &lt;RcppArmadillo.h&gt;</span>
+<span id="cb11-2"><a href="#cb11-2"></a>// [[Rcpp::depends(RcppArmadillo)]]</span>
+<span id="cb11-3"><a href="#cb11-3"></a>using namespace arma;</span>
+<span id="cb11-4"><a href="#cb11-4"></a></span>
+<span id="cb11-5"><a href="#cb11-5"></a>// [[Rcpp::export]]</span>
+<span id="cb11-6"><a href="#cb11-6"></a>vec nicelr (vec y, mat x) {</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  vec beta_hat = solve(x.t() * x, x.t() * y);</span>
+<span id="cb11-8"><a href="#cb11-8"></a>  return beta_hat;</span>
+<span id="cb11-9"><a href="#cb11-9"></a>}</span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a>/*** R</span>
+<span id="cb11-12"><a href="#cb11-12"></a>x = cbind(rep(1,5),1:5); y = x %*% c(1,2) + rnorm(5)</span>
+<span id="cb11-13"><a href="#cb11-13"></a>nicelr(y, x)</span>
+<span id="cb11-14"><a href="#cb11-14"></a>*/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="some-stats-with-rcpparmadillo-linear-regression-1" class="slide level2" data-background-color="#bf3eff">
