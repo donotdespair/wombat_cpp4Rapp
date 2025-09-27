@@ -260,7 +260,7 @@ $$
 $$
 2. Extend the output `List` to include a new element `sigma2_hat`.
 
-Hint: use functions `.t()` and `as_scalar()`.
+Hint: use functions `.t()`, `.n_elem` and `as_scalar()`.
 :::
 
 
