@@ -35,16 +35,6 @@ yel = "#68218a"
 
 [Tomasz Woźniak](https://github.com/donotdespair)
 
-* senior lecturer in econometrics at the unimelb
-* econometrician: Bayesian time series analyst
-* develops methods for applied macro research
-* loves cycling, yoga, books, volunteering, contemporary theatre, music, and arts
-* I am nice!
-
-## <span style='color: #68218a;'>About me</span> {background-color="#bf3eff"}
-
-[Tomasz Woźniak](https://github.com/donotdespair)
-
 * **R** enthusiast and specialised user for 17 years
 * **C++** coder since 2021
 * associate editor of the [R Journal](https://journal.r-project.org/)
@@ -57,30 +47,14 @@ yel = "#68218a"
 
 
 
-
-
-
-
-# <span style='color: #68218a;'>Motivation</span> {background-color="#bf3eff"}
-
 ## <span style='color: #68218a;'>Motivation</span> {background-color="#bf3eff"}
 
 * Compiled code written in **C++** runs much faster than interpreted code in **R**
 * Coding in **C++** for **R** applications has always been possible
-* It requires:
-  * writing **C++** code
-  * compiling it, and
-  * linking it to **R**
-* Difficulties:
-  * tedious object-oriented programming
-  * necessity of assuring object compatibility
-* Benefits are great, but the cost was too high
-
-## <span style='color: #68218a;'>Motivation</span> {background-color="#bf3eff"}
-
+* Benefits are great, but the entry cost was too high
 * **Rcpp** is a family of packages by Dirk Eddelbuetel et al. facilitating the application of **C++** in **R**
-* An interface for communication between **R** and **C++**
-* Greatly simplifies the workflow
+* **Rcpp** is an interface for communication between **R** and **C++**
+* It greatly simplifies the workflow
 * Easier to benefit from the best of the two worlds:
   * **C++** programs are pre-compiled assuring fast computations\
   *perfect for writing functions*
@@ -96,9 +70,8 @@ yel = "#68218a"
   * functional programming
   * object types: scalars, vectors, matrices, lists, etc.
   * linear algebra
-  * numerical optimisation
   * random number generation
-
+* a first look into **R** package using **C++** code
 
 ## <span style='color: #68218a;'>Materials for this session</span> {background-color="#bf3eff"}
 
@@ -117,7 +90,7 @@ yel = "#68218a"
   * [**Armadillo** library documentation](https://arma.sourceforge.net/docs.html)
   * [RcppGallery](https://gallery.rcpp.org/)
   * [stackoverflow.com tag:rcpp](https://stackoverflow.com/questions/tagged/rcpp)
-* François, R., [*Optimizing R Code with Rcpp*](https://www.datacamp.com/courses/optimizing-r-code-with-rcpp) on datacamp
+* François, R., [*Optimizing R Code with Rcpp*](https://www.datacamp.com/courses/optimizing-r-code-with-rcpp)
 * Tsuda, M., [*Rcpp for everyone*](https://teuder.github.io/rcpp4everyone_en/)
 * Eddelbuettel, D., [*Seamless R and C++ Integration with Rcpp*](https://doi.org/10.1007/978-1-4614-6868-4)
 
@@ -147,9 +120,9 @@ install.packages(RcppArmadillo); library(RcppArmadillo)
 
 
 
-# <span style='color: #68218a;'>The first steps with Rcpp</span> {background-color="#bf3eff"}
+# <span style='color: #68218a;'>The first steps with C++</span> {background-color="#bf3eff"}
 
-## <span style='color: #68218a;'>The first steps with Rcpp</span> {background-color="#bf3eff"}
+## <span style='color: #68218a;'>The first steps with C++</span> {background-color="#bf3eff"}
 
 Consider the following **C++** applications in **R**:
 
@@ -158,7 +131,6 @@ Consider the following **C++** applications in **R**:
 * Develop a **C++** function in a `.cpp` file
   * perfect for developing, testing, and benchmarking
 * Use a function from a `*.cpp` file in **R** computations
-* Use code across `*.cpp` files
   * perfect for elaborate projects
 * Develop an **R** package using **C++** code
   * perfect for sharing your work with the community
@@ -167,60 +139,70 @@ Consider the following **C++** applications in **R**:
 ## <span style='color: #68218a;'>Define a **C++** function in an **R** script</span> {background-color="#bf3eff"}
 
 ```{r rw1}
-Rcpp::cppFunction(                               # enables your C++ function in R
-  depends = "RcppArmadillo",                     # use RcppArmadillo
-  'DataFrame nicerw1 (int n) {                   // define the function and its argument
-    arma::vec rw(n, arma::fill::randn);          // fill a vector with random draws
-    for (int i=1; i<n; i++) {                    // specify a loop
-      rw[i] += rw[i-1];                          // update the vector elements
+Rcpp::cppFunction(                                    # enables your C++ function in R
+  depends = "RcppArmadillo",                          # use RcppArmadillo
+  'DataFrame nicerw (int n) {                        // define the function and its argument
+    arma::vec rw(n, arma::fill::randn);               // fill a vector with random draws
+    for (int i=1; i<n; i++) {                         // specify a loop
+      rw[i] += rw[i-1];                               // update the vector elements
     }
-    return DataFrame::create(_["rw"] = rw);      // return a data frame with the vector
+    return DataFrame::create(_["rw"] = rw);           // return a data frame with the vector
   }'
 )
-plot.ts(nicerw1(100))                            # use the function to generate and plot the random walk
-```
-
-## <span style='color: #68218a;'>Develop a **C++** function in a `nicerw.cpp` file</span> {background-color="#bf3eff"}
-
-A `nicerw.cpp` file sample contents:
-
-```{Rcpp rcpp_df}
-#include <RcppArmadillo.h>                // include RcppArmadillo header
-// [[Rcpp::depends(RcppArmadillo)]]       // include dependency
-
-using namespace Rcpp;                     // declare namespace for Rcpp
-using namespace arma;                     // declare namespace for Armadillo
-
-// [[Rcpp::export]]                       // export the following function
-vec nicerw1 (                             // declare output class(vec) and function name
-    int n                                 // declare function argument
-) { 
-  vec rw(n, fill::randn);                 // create amd fill a vector with random draws draws
-  for (int i=1; i<n; i++) {               // specify a loop
-    rw[i] += rw[i-1];                     // update the vector elements
-  }
-  return rw;                              // return the vector
-}
-/*** R                                    
-plot.ts(nicerw1(100))                     # use the function to generate and plot the random walk
-*/
+set.seed(1) 
+plot.ts(nicerw(100))                                 # use the function to generate and plot the random walk
 ```
 
 
-## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
+
+
+
+## <span style='color: #68218a;'>Define a **C++** function in an **R** script</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
 
-1. Copy/paste/modify the **C++** function `nicerw1` by the random walk using function `cumsum`.
+1. Copy/paste/modify the **C++** function `nicerw` by the random walk using function `cumsum`.
 
-2. Write an **R** function that generates a random walk using functions `rnorm` and `cumsum`.
+2. Write an **R** function that generates a random walk using functions `rnorm` and `cumsum`, and returns the `vec` vector.
 
 3. Benchmark the two functions using `microbenchmark::microbenchmark()`.
 :::
 
 
 
-## <span style='color: #68218a;'>Use a function from a `nicelr.cpp` file in **R**</span> {background-color="#bf3eff"}
+
+
+
+
+## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
+
+A `nicelr.cpp` file sample contents:
+
+```{Rcpp rcpp_df, eval = FALSE}
+#include <RcppArmadillo.h>                            // include RcppArmadillo header
+// [[Rcpp::depends(RcppArmadillo)]]                   // include dependency
+
+using namespace Rcpp;                                 // declare namespace for Rcpp
+using namespace arma;                                 // declare namespace for Armadillo
+
+// [[Rcpp::export]]                                   // export the following function
+List nicelr (                                         // declare output class and function name
+    vec y,                                            // declare function arguments
+    mat x
+) {
+  vec beta_hat = solve(x.t() * x, x.t() * y);         // compute the OLS estimator
+  return List::create(_["beta_hat"] = beta_hat);      // return the output as a list
+}
+
+/*** R                                    
+x = cbind(rep(1,5),1:5)
+y = x %*% c(1,2) + rnorm(5)
+nicelr(y, x)                                           # use the function for computation in R
+*/
+```
+
+
+## <span style='color: #68218a;'>Use a function from a `.cpp` file in **R**</span> {background-color="#bf3eff"}
 
 * `nicelr.cpp` file contents:
 
@@ -264,192 +246,157 @@ Hint: use functions `.t()`, `.n_elem` and `as_scalar()`.
 :::
 
 
-## <span style='color: #68218a;'>Use code across `.cpp` files</span> {background-color="#bf3eff"}
-
-* Use `nicerw.cpp` file contents to generate a random walk and estimate an autoregressive model in `nicelr.cpp` file.
-
-STEP 1: Prepare the `nicerw1.cpp` file
-
-```{Rcpp rcpprw1}
-#| eval: false
-
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
-using namespace arma;
-
-// [[Rcpp::export]] 
-arma::vec nicerw1 (int n) { 
-  vec rw(n, fill::randn);
-  return cumsum(rw);
-}
-```
-
-STEP 2: Prepare the header `nicerw1.h`
-
-```{Rcpp rcpprw2}
-#| eval: false
-
-#ifndef _NICERW1_
-#define _NICERW1_
-
-#include <RcppArmadillo.h>
-arma::vec nicerw1 (int n);
-#endif
-```
-
-
-## <span style='color: #68218a;'>Use code across `.cpp` files</span> {background-color="#bf3eff"}
-
-STEP 3: Include the header `nicerw1.h` in the `nicelr1.cpp` file
-
-```{Rcpp rcpprw3}
-#| eval: false
-
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
-
-#include <nicerw1.h>
-
-using namespace Rcpp;
-using namespace arma;
-
-// [[Rcpp::export]]
-List nicelr (
-    vec y, 
-    mat x
-) {
-  vec beta_hat = solve(x.t() * x, x.t() * y);
-  double sigma2_hat = as_scalar( (y - x * beta_hat).t() * (y - x * beta_hat) ) / y.n_elem;
-  return List::create(
-    _["beta_hat"] = beta_hat, 
-    _["sigma2_hat"] = sigma2_hat
-  );
-}
-
-/*** R
-rw = nicerw1(100)
-nicelr(as.matrix(rw[2:100]), as.matrix(rw[1:99]))
-*/
-
-```
-
 
 
 
 
 # <span style='color: #68218a;'>Some stats with RcppArmadillo</span> {background-color="#bf3eff"}
 
-## <span style='color: #68218a;'>Some stats with RcppArmadillo</span> {background-color="#bf3eff"}
 
-* Data objects from **Rcpp** have limited functionality\
-* **Armadillo** is a **C++** library for linear algebra that
-  * provides a rich set of functions
-  * has a simple and intuitive syntax
-  * includes fast linear algebra routines, and
-  * fast random number generators
-  * has fantastic [documentation](http://arma.sourceforge.net/docs.html)\
-  
-* **RcppArmadillo** is a simplified interface with **Armadillo**
-  * allows seamless integration with **Rcpp**
-  * easily passes data between **R** and **C++**
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: NIG2 distribution</span> {background-color="#bf3eff"}
+
+**Normal-inverted gamma 2 distribution.**
+
+Random variables, an $N$-vector $\mathbf{x}$ and a positive scalar, $\sigma^2$, following the normal-inverted gamma 2 distribution with
+
+* an $N$-vector of the mean $\boldsymbol\mu$
+* a positive definite $N\times N$ covariance matrix $\boldsymbol\Sigma$
+* a positive scale $s$ 
+* a positive shape $\nu$ 
+
+$$ $$
+
+**Normal-inverted gamma 2 distribution.**
+\begin{align*}
+\left(\mathbf{x}, \sigma^2\right) &\sim NIG2\left(\boldsymbol\mu, \boldsymbol\Sigma, s, \nu\right)\\[2ex]
+p\left(\mathbf{x}, \sigma^2\right) &= p\left(\mathbf{x} \mid \sigma^2\right)p\left(\sigma^2\right)\\[2ex]
+\sigma^2 &\sim IG2\left(s, \nu\right)\\
+\mathbf{x} \mid \sigma^2 &\sim N\left(\boldsymbol\mu, \sigma^2\boldsymbol\Sigma\right)
+\end{align*}
 
 
-## <span style='color: #68218a;'>Some stats with RcppArmadillo: IG2 distribution</span> {background-color="#bf3eff"}
 
-Sampling random draws from an inverted gamma 2 distribution.
 
-A positive random variable $\sigma^2$ following an inverted gamma 2 distribution with positive scale $s$ and shape $\nu$ parameters is denoted by:
-$$
-\sigma^2 \sim IG2\left(s, \nu\right)
-$$
 
-1. Generate random draw $x$ from $\chi^2(\nu)$
-2. Return $\frac{s}{x}$
 
-## <span style='color: #68218a;'>Some stats with RcppArmadillo: IG2 distribution</span> {background-color="#bf3eff"}
+
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: NIG2 distribution</span> {background-color="#bf3eff"}
+
+**Normal-inverted gamma 2 distribution.**
+\begin{align*}
+\left(\mathbf{x}, \sigma^2\right) &\sim NIG2\left(\boldsymbol\mu, \boldsymbol\Sigma, s, \nu\right)\\[2ex]
+p\left(\mathbf{x}, \sigma^2\right) &= p\left(\mathbf{x} \mid \sigma^2\right)p\left(\sigma^2\right)\\[2ex]
+\sigma^2 &\sim IG2\left(s, \nu\right)\\
+\mathbf{x} \mid \sigma^2 &\sim N\left(\boldsymbol\mu, \sigma^2\boldsymbol\Sigma\right)
+\end{align*}
+
+$$ $$
+
+To generate a random draw from the normal-inverted gamma 2 distribution:
+
+1. Generate a random draw of $\sigma^{2}$ from $IG2(s, \nu)$
+2. Generate the corresponding random draw of $\mathbf{x}$ from $N\left(\boldsymbol\mu, \sigma^{2}\boldsymbol\Sigma\right)$
+3. Return the pair $\left\{\mathbf{x}, \sigma^2\right\}$
+
+
+
+
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: NIG2 distribution</span> {background-color="#bf3eff"}
+
+$$ $$
+
+To generate a random draw from the normal-inverted gamma 2 distribution:
+
+#### Generate a random draw of $\sigma^{2}$ from $IG2(s, \nu)$
+
+1. Generate a random draw from $\chi^2(\nu)$ and save in `z`
+2. Return `s / z` as a random draw from $IG2(s, \nu)$
+
+#### Generate the corresponding random draw of $\mathbf{x}$ from $N\left(\boldsymbol\mu, \sigma^{2}\boldsymbol\Sigma\right)$
+
+1. Compute the Cholesky decomposition of $\sigma^2\boldsymbol\Sigma$ and save in `L`
+2. Sample an $N$-vector of independent standard normal random variables and save in `y`
+3. Return `mu + L * y` as the random draw from $N\left(\boldsymbol\mu, \sigma^2\boldsymbol\Sigma\right)$
+
+#### Return the pair $\left\{\mathbf{x}, \sigma^2\right\}$
+
+
+
+
+
+
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: NIG2 distribution</span> {background-color="#bf3eff"}
 
 Contents of a `nicerig2.cpp` file:
 
 ```{Rcpp nicerig2}
+#| eval: false
+
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace arma;
 
 // [[Rcpp::export]]
-vec nicerig2 (
-  const int n, 
-  const double s, 
-  const double nu
+double nicerig2 (
+    const double s, 
+    const double nu
 ) {
-  vec rig2 = s / chi2rnd( nu, n );
+  double rig2 = s / chi2rnd( nu );
   return rig2;
 }
 
 /*** R
-nicerig2(2, 1, 1)
+nicerig2(1, 3)
 */
 ```
 
 
 
-## <span style='color: #68218a;'>Develop a **C++** function in a `.cpp` file</span> {background-color="#bf3eff"}
+
+
+
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: NIG2 distribution</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Your turn!"}
-Consider a Gaussian random walk:
-$$
-y_t = y_{t-1} + \varepsilon_t, \qquad \varepsilon_t \sim N(0,1), \qquad y_0 = 0
-$$
-Develop a **C++** function using **RcppArmadillo** that:
+Complement the `niceig2` function with another one that provides a random draw from the normal-inverted gamma 2 distribution.
 
-* has an integer `T` as the only argument
-* returns a `T`-vector of type `vec` with Gaussian random walk\
+#### Use arguments 
+
+  * an $N$-vector `mu`
+  * an $N\times N$ positive definite matrix `Sigma`
+  * a positive scalar `s`
+  * a positive scalar `nu`
+  
+#### return a list containing
+
+  * the draw of $\sigma^2$
+  * the draw of $\mathbf{x}$
 
 Get some help [HERE](http://arma.sourceforge.net/docs.html).
 :::
 
 
 
-## <span style='color: #68218a;'>Some stats with RcppArmadillo: linear regression</span> {background-color="#bf3eff"}
-
-Contents of a `nicelr.cpp` file:
-
-```{Rcpp nicelr}
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
-using namespace arma;
-
-// [[Rcpp::export]]
-vec nicelr (vec y, mat x) {
-  vec beta_hat = solve(x.t() * x, x.t() * y);
-  return beta_hat;
-}
-
-/*** R
-x = cbind(rep(1,5),1:5); y = x %*% c(1,2) + rnorm(5)
-nicelr(y, x)
-*/
-```
-
-
-## <span style='color: #68218a;'>Some stats with RcppArmadillo: linear regression</span> {background-color="#bf3eff"}
-
-::: {.callout-caution title="Your turn!"}
-Extend the `nicelr` function to return the error term variance:
-$$
-\hat\sigma^2 = \frac{1}{T} \left( Y - \hat\beta X \right)'\left( Y - \hat\beta X \right)
-$$
-
-* don't adjust the arguments
-* return `beta_hat` and `sigma2_hat` in a list
-
-Get some help [HERE](http://arma.sourceforge.net/docs.html).
-
-Hint: use functions `as_scalar()`, `.t()` and `.n_elem`.
-:::
 
 
 
-## <span style='color: #68218a;'>Some stats with RcppArmadillo: limulation smoother</span> {background-color="#bf3eff"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## <span style='color: #68218a;'>Some stats with RcppArmadillo: simulation smoother</span> {background-color="#bf3eff"}
 
 ::: {.callout-caution title="Additional resources!"}
 Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https://gallery.rcpp.org/articles/simulation-smoother-using-rcpparmadillo/) at *Rcpp Gallery*.
