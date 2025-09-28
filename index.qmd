@@ -77,10 +77,9 @@ yel = "#68218a"
 
 * Lecture slides
 * **C++** scripts:
-  * [`nicetry.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicetry.cpp)
-  * [`nicelr.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicelr.cpp)
-  * [`nicelist.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicelist.cpp)
-  * [`nicerig2.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicerig2.cpp)
+  * [`nicerw.R`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerw.R)
+  * [`nicelr.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicelr.cpp)
+  * [`nicerig2.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerig2.cpp)
 
 ## <span style='color: #68218a;'>Learning resources</span> {background-color="#bf3eff"}
 
@@ -116,7 +115,7 @@ $$ $$
 install.packages(Rcpp); library(Rcpp)
 install.packages(RcppArmadillo); library(RcppArmadillo)
 ```
-* Check if the installation is successful. Source the file [`nicetry.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/preparation/nicetry.cpp) in RStudio by executing: `Rcpp::sourceCpp("nicetry.cpp")`. If you see a matrix with values 1, 2, and 3 in R, you're good to go for the workshop.
+* Check if the installation is successful. Source the file [`nicetry.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/preparation/nicetry.cpp) in RStudio by executing: `Rcpp::sourceCpp("nicetry.cpp")`. If you see a matrix with values 1, 2, and 3 in R, you're good to go for the workshop.
 
 
 
@@ -413,10 +412,9 @@ Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https:/
 
 * Keep programming in **C++** for **R** applications
 * Revise solutions to our exercises:
-  * [`nicex1.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicex1.cpp)
-  * [`nicex2.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicex2.cpp)
-  * [`nicex3.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicex3.cpp)
-  * [`nicex4.cpp`](https://github.com/donotdespair/w4UKR_cpp4Rapp/blob/master/nicex4.cpp)
+  * [`nicerw_ex.R`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerw_ex.R)
+  * [`nicelr_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicelr_ex.cpp)
+  * [`nicerig2_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerig2_ex.cpp)
 * Reach out for help
 * Read the documentation of the **C++** libraries you're about to use
 * Study the **Rcpp** family of packages
