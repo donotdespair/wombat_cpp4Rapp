@@ -415,6 +415,7 @@ Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https:/
   * [`nicerw_ex.R`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerw_ex.R)
   * [`nicelr_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicelr_ex.cpp)
   * [`nicerig2_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerig2_ex.cpp)
+  * all available in the [presentation GH repository](https://github.com/donotdespair/wombat_cpp4Rapp)
 * Reach out for help
 * Read the documentation of the **C++** libraries you're about to use
 * Study the **Rcpp** family of packages
