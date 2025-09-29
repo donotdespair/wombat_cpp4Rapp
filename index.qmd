@@ -412,9 +412,9 @@ Have a look at my article on [*Simulation Smoother using RcppArmadillo*](https:/
 
 * Keep programming in **C++** for **R** applications
 * Revise solutions to our exercises:
-  <!-- * [`nicerw_ex.R`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerw_ex.R) -->
-  <!-- * [`nicelr_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicelr_ex.cpp) -->
-  <!-- * [`nicerig2_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerig2_ex.cpp) -->
+  * [`nicerw_ex.R`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerw_ex.R)
+  * [`nicelr_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicelr_ex.cpp)
+  * [`nicerig2_ex.cpp`](https://github.com/donotdespair/wombat_cpp4Rapp/blob/master/nicerig2_ex.cpp)
 * Reach out for help
 * Read the documentation of the **C++** libraries you're about to use
 * Study the **Rcpp** family of packages
